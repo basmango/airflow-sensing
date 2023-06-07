@@ -7,8 +7,17 @@ services:
     tty: true
     volumes:
       - "$HOME/.Xauthority:/home/akl/.Xauthority:rw" # --env="DISPLAY" wtf
+      - ./locations.txt:/home/akl/ardupilot/Tools/autotest/locations.txt
     environment:
       - DISPLAY
-    command: ./sim_vehicle.py -L Ballarat --console --map -v ArduCopter -N
+    command:  ./sim_vehicle.py -L IISERB_FOOTBALL --console --map -v ArduCopter -N
     #command: ./sim_vehicle.py -L Ballarat --map -v ArduCopter -N
     
+  # start mavros via radarku/mavros
+  mavros:
+    image: radarku/mavros
+    network_mode: "host"
+    tty: true
+    environment:
+      - DISPLAY
+      - FCUURL=udp://:14550@localhost:14555
