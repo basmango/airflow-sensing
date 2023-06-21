@@ -3,23 +3,15 @@
 #import necessary packages
 import rospy
 import math
+import time 
 from geometry_msgs.msg import PoseStamped
 from sensor_msgs.msg import NavSatFix
 from mavros_msgs.msg import GlobalPositionTarget
+from vincenty import vincenty
 
-#error function using haversine formula
-def error(x_expected, y_expected, x_real, y_real):
-    R = 6371000
-    x_expected = math.radians(x_expected)
-    y_expected = math.radians(y_expected)
-    x_real = math.radians(x_real)
-    y_real = math.radians(y_real)
-    dlon = x_real - x_expected
-    dlat = y_real - y_expected
-    a = math.sin(dlat/2)**2 + math.cos(y_expected) * math.cos(y_real) * math.sin(dlon/2)**2
-    c = 2 * math.atan2(math.sqrt(a), math.sqrt(1-a))
-    d = R * c
-    return d
+#error function using vincenty formula
+def distance(x_expected, y_expected, x_real, y_real):
+    return vincenty((x_expected, y_expected), (x_real, y_real)) * 1000
 
 #callback function
 def callback(msg):
@@ -43,13 +35,15 @@ def callback(msg):
     # use haversine to calculate distance between current position and current waypoint
 
     print('distance from the next waypoints :')
-    print(error(waypoints[current_waypoint_index][0], waypoints[current_waypoint_index][1], msg.latitude, msg.longitude))
+    print(distance(waypoints[current_waypoint_index][0], waypoints[current_waypoint_index][1], msg.latitude, msg.longitude))
 
-    if error(waypoints[current_waypoint_index][0], waypoints[current_waypoint_index][1], msg.latitude, msg.longitude) < 1:    
+    if distance(waypoints[current_waypoint_index][0], waypoints[current_waypoint_index][1], msg.latitude, msg.longitude) < 1:    
 
 
         if current_waypoint_index != len(waypoints) - 1:
             current_waypoint_index = (current_waypoint_index + 1) % len(waypoints)
+
+        time.sleep(30)
 
     pub_obj.publish(geopose_stamped)
 
@@ -66,7 +60,9 @@ pub_obj = rospy.Publisher('/mavros/setpoint_position/global', GlobalPositionTarg
 rate = rospy.Rate(10)
 posemsg = PoseStamped()
 
-waypoints=[(23.28884, 77.27397), (23.28886, 77.27417), (23.28899, 77.27416), (23.28897, 77.27396), (23.2891, 77.27394), (23.28911, 77.27414)]
+waypoints=[(23.28884098,77.27393332), (23.28883891,77.27402810), ( 23.28884098,77.27412853), (23.28884305,77.27422443),
+           (23.28893114,77.27422443),( 23.28893218,77.27412740),(  23.28893218,77.27402810),(23.28893114,77.27393107),
+           ( 23.28901924,77.27393220),( 23.28901924,77.27402810),(23.28901820,77.27412853),(23.28901924,77.27422330)]
 
 # Define waypoints in GPS format [latitude, longitude, altitude]
 """
