@@ -8,6 +8,7 @@ from geometry_msgs.msg import PoseStamped
 from sensor_msgs.msg import NavSatFix
 from mavros_msgs.msg import GlobalPositionTarget
 from vincenty import vincenty
+from geographic_msgs.msg import GeoPoseStamped
 
 #error function using vincenty formula
 def distance(x_expected, y_expected, x_real, y_real):
@@ -24,12 +25,12 @@ def callback(msg):
     print('current waypoint :')
     print(waypoints[current_waypoint_index][0], waypoints[current_waypoint_index][1])
 
-    geopose_stamped = GlobalPositionTarget()
+    geopose_stamped = GeoPoseStamped()
     geopose_stamped.header.stamp = rospy.Time.now()
     geopose_stamped.header.frame_id = 'map'
-    geopose_stamped.latitude = waypoints[current_waypoint_index][0]
-    geopose_stamped.longitude = waypoints[current_waypoint_index][1]
-    geopose_stamped.altitude = msg.altitude
+    geopose_stamped.pose.position.latitude = waypoints[current_waypoint_index][0]
+    geopose_stamped.pose.position.longitude = waypoints[current_waypoint_index][1]
+    geopose_stamped.pose.position.altitude = msg.altitude
      
     
     # use haversine to calculate distance between current position and current waypoint
@@ -55,7 +56,7 @@ rospy.init_node('square')
 sub_obj = rospy.Subscriber('/mavros/global_position/global', NavSatFix, callback)
 
 #publisher object
-pub_obj = rospy.Publisher('/mavros/setpoint_position/global', GlobalPositionTarget, queue_size=10)
+pub_obj = rospy.Publisher('/mavros/setpoint_position/global', GeoPoseStamped, queue_size=10)
 
 rate = rospy.Rate(10)
 posemsg = PoseStamped()
