@@ -1,18 +1,6 @@
 version: '3'
 services:
-  sitl:
-    image: wnt3rmute/ardupilot-sitl
-    network_mode: "host"
-    stdin_open: true
-    tty: true
-    volumes:
-      - "$HOME/.Xauthority:/home/akl/.Xauthority:rw" # --env="DISPLAY" wtf
-      - ./locations.txt:/home/akl/ardupilot/Tools/autotest/locations.txt
-    environment:
-      - DISPLAY
-    command:  ./sim_vehicle.py -L IISERB_FOOTBALL --console --map -v ArduCopter -N
-    #command: ./sim_vehicle.py -L Ballarat --map -v ArduCopter -N
-    
+   
   # start mavros via radarku/mavros
   mavros:
     image: radarku/mavros
@@ -20,4 +8,4 @@ services:
     tty: true
     environment:
       - DISPLAY
-      - FCUURL=udp://:14550@localhost:14555
+      - FCUURL=udp://:14560@localhost:14555
