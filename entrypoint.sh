@@ -1,2 +1,2 @@
-. /opt/ros/noetic/setup.sh
+. /opt/ros/humble/setup.sh
 bash

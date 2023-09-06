@@ -1,2 +1,0 @@
-#NAME=latitude,longitude,absolute-altitude,heading
-IISERB_FOOTBALL=23.28884507,77.27392688,527,180
